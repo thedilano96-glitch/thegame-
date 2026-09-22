@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Game</title>
+    
+    <!-- Lier le fichier manifest.json pour la PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a1a">
+
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #1a1a1a; color: white; margin-top: 50px; }
+        .btn { padding: 12px 24px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-play { background: #28a745; color: white; }
+        .btn-shop { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1 id="welcome-title">Chargement de The Game...</h1>
+    <h3 id="user-info"></h3>
+
+    <button id="btn-play" class="btn btn-play">---</button>
+    <button id="btn-shop" class="btn btn-shop">---</button>
+
+    <!-- Inclusion du script principal -->
+    <script src="thegame.js"></script>
+
+    <script>
+        // 1. Mise à jour de l'interface utilisateur
+        function updateUI() {
+            if (typeof gameInstance !== 'undefined') {
+                document.getElementById('welcome-title').innerText = gameInstance.user.getText('welcome');
+                document.getElementById('user-info').innerText = `Pays : ${gameInstance.user.country} | Devise : ${gameInstance.user.currencyInfo.symbol}`;
+                document.getElementById('btn-play').innerText = gameInstance.user.getText('play');
+                document.getElementById('btn-shop').innerText = `${gameInstance.user.getText('buy_coins')} (${gameInstance.user.formatPrice(4.99)})`;
+            }
+        }
+        window.addEventListener('load', updateUI);
+        setTimeout(updateUI, 1000);
+
+        // 2. Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker enregistré !', reg))
+                    .catch(err => console.log('Échec d\'enregistrement du Service Worker :', err));
+            });
+        }
+    </script>
+</body>
+</html>
